@@ -1,0 +1,41 @@
+#!/bin/bash
+#SBATCH -J HPL_test_np_gen # A single job name for the array 
+#SBATCH -N 1 # 
+#SBATCH -n 1 # 
+##SBATCH -p notchpeak
+##SBATCH -A chpc
+#SBATCH -o %N-%j.out # name of the stdout
+#SBATCH -e %N-%j.err # name of the stderr
+##SBATCH --reservation=downtime-2022-12-06
+#SBATCH -t 0-1:00 # 2 hours (D-HH:MM) 
+
+# this script runs HPL on all NP general nodes that are available
+# find out how many nodes are available and put it to the -N flag
+# the script should figure out the rest to run HPL on 32 tasks per node 
+
+module purge
+module load singularity
+
+set -x
+
+MPI_PROC_NUM=1
+
+# Memory on the GPU. in MB
+if [ ! -v MEM ]; then
+  MEM=$(glxinfo | egrep 'Dedicated video memory' | awk '{ print $4 }')
+fi
+
+# % of memory size for the run
+SIZE=50
+NB=288
+
+words=$((MEM*1024*1024/8))
+
+N=$(echo "scale=0;sqrt($words*$SIZE/100)/($NB)" | bc)
+N=$((N*NB))
+
+cp HPL.dat.tpl HPL.dat
+sed "s/%N%/$N/" -i HPL.dat
+
+singularity exec --nv hpc-benchmarks:21.4-hpl.sif mpirun -np 1 xhpl
+
