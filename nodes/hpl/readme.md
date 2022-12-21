@@ -3,7 +3,9 @@
 This directory contains a SLURM script and a template HPL input file to run a HPL calculation on a single node.
 
 If the script is run via SLURM, a correct account/partition needs to be added, e.g
+```
 sbatch -A account -p partition run1n.slr
+```
 
 To run outside of SLURM, simply run the script through bash:
 ```

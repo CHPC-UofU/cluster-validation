@@ -7,7 +7,9 @@ Singularity is required to run the container, and account at Nvidia container re
 ### Running
 
 If the script is run via SLURM, a correct account/partition, GPU gres and host memory equal or larger to that on the GPU need to be added, e.g
+```
 sbatch -A notchpeak-shared-short -p notchpeak-shared-short --gres=gpu:t4:1 --mem=16G run1gpu.slr
+```
 
 To run interactively, execute the script through bash:
 ```
